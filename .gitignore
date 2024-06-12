@@ -12,3 +12,11 @@
 .DS_Store
 .vscode
 /cmake/lua/vs2022
+/.vs
+/.idea
+/3rd
+3rd/jemalloc
+/3rd
+/3rd
+/3rd
+/cmake/lua/vs

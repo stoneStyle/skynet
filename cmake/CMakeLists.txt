@@ -1,47 +1,57 @@
+project(skynet-Win)
 option(LUA_CLIB_PATH, "luaclib")
 option(CSERVICE_PATH, "cservice")
 
 option(SKYNET_BUILD_PATH, ".")
 
-#lua
+option(TLS_LIB "");
+option(TLS_INC "");
+
+
+option(JEMALLOC_STATICLIB "3rd/jemalloc/lib/");
+option(JEMALLOC_INC "3rd/jemalloc/include/jemalloc");
+
+#cmake doc https://cmake-doc.readthedocs.io/zh-cn/latest/index.html
+#libName
+#libInclude
+#libpath
+
 set(LUA_STATICLIB , "3rd/lua/liblua.a")
 option(LUA_LIB ${LUA_STATICLIB})
 option(LUA_INC "3rd/lua")
 
+add_library(lualib STATIC IMPORTED)
+add_library(jemalloc STATIC IMPORTED)
+add_library(tlslib STATIC IMPORTED)
+
+#lua
+
 set(CFLAGS -g -O2 -Wall -I${SKYNET_BUILD_PATH}/skynet-src)
-
-set(LUASTATIC_SRC 
-        3rd/lua/lapi.c 
-        3rd/lua/lauxlib.c 
-        3rd/lua/lbaselib.c
-        3rd/lua/lcode.c 
-        3rd/lua/lcorolib.c 
-        3rd/lua/lctype.c 
-        3rd/lua/ldblib.c 
-        3rd/lua/ldebug.c 
-        3rd/lua/ldo.c 
-        3rd/lua/ldump.c 
-        3rd/lua/lfunc.c 
-        3rd/lua/lgc.c 
-        3rd/lua/linit.c 
-        3rd/lua/liolib.c
-        3rd/lua/llex.c
-        3rd/lua/lmathlib.c 
-        3rd/lua/lmem.c 
-        3rd/lua/loadlib.c 
-        3rd/lua/lobject.c 
-        3rd/lua/lopcodes.c 
-        3rd/lua/loslib.c 
-        3rd/lua/lparser.c 
-        3rd/lua/lstate.c 
-        3rd/lua/lstring.c 
-        3rd/lua/lstrlib.c 
-        3rd/lua/ltable.c 
-        3rd/lua/ltablib.c 
-        3rd/lua/ltests.c 
-        3rd/lua/ltm.c          
-        3rd/lua/lundump.c
-        3rd/lua/lvm.c
-         3rd/lua/lzio.c)
-
 add_library(${LUA_STATICLIB} STATIC ${LUASTATIC_SRC})
+
+set(SKYNET_SRC
+     ../skynet-src/skynet_main.c
+     ../skynet-src/skynet_handle.c
+     ../skynet-src/skynet_module.c
+     ../skynet-src/skynet_mq.c
+     ../skynet-src/skynet_server.c
+     ../skynet-src/skynet_start.c
+     ../skynet-src/skynet_timer.c
+     ../skynet-src/skynet_error.c
+     ../skynet-src/skynet_harbor.c
+     ../skynet-src/skynet_env.c
+     ../skynet-src/skynet_monitor.c
+     ../skynet-src/skynet_socket.c
+     ../skynet-src/socket_server.c
+     ../skynet-src/malloc_hook.c
+     ../skynet-src/skynet_daemon.c
+     ../skynet-src/skynet_log.c
+)
+
+add_executable(skynet ${SKYNET_SRC})
+target_link_libraries(skynet lualib jemalloc tlslib)
+target_include_directories(skynet ${LUA_INC})
+
+target_include_directories(skynet ${JEMALLOC_INC})
+
+target_include_directories(skynet ${TLS_INC})
